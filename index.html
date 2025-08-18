@@ -1,175 +1,341 @@
-<!DOCTYPE html>
-<html>
+        <!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Coax/Fiber/Zip Tabs</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    input { padding: 5px; margin: 5px 0; width: 300px; }
-    .tab-buttons { display: flex; gap: 10px; margin-top: 15px; }
-    .tab-buttons button { padding: 10px 20px; border: none; background: #ccc; cursor: pointer; border-radius: 5px; }
-    .tab-buttons button.active { background: #007BFF; color: white; }
-    .tab-content { display: none; margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; }
-    .tab-content.active { display: block; }
-    .file-item { margin: 5px 0; display: flex; align-items: center; gap: 10px; }
-    .copy-btn { padding: 5px 10px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 4px; }
-    #copyNotification {
-      position: fixed; bottom: 20px; right: 20px; background: #28a745; color: white;
-      padding: 10px 20px; border-radius: 5px; display: none; font-size: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3); animation: fadeInOut 1.2s ease forwards;
-      max-width: 350px; word-break: break-word;
-    }
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: translateY(20px); }
-      20% { opacity: 1; transform: translateY(0); }
-      80% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(20px); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deliverable File Naming Tool | Professional Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f72585;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+            font-weight: 600;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-color);
+            background: rgba(67, 97, 238, 0.1);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            background: rgba(67, 97, 238, 0.1);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .file-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1rem;
+        }
+
+        .file-item {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            border-left: 4px solid var(--accent-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .file-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-label {
+            font-weight: 500;
+            color: #555;
+            margin-right: 0.5rem;
+        }
+
+        .file-name {
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--dark-color);
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        #copyNotification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--success-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            display: none;
+            font-size: 0.9rem;
+            box-shadow: var(--box-shadow);
+            animation: fadeInOut 1.2s ease forwards;
+            max-width: 350px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
+
+        .notification-icon {
+            font-size: 1.2rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            .tab-buttons {
+                flex-wrap: wrap;
+            }
+            .file-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
-  <h2>Deliverable File Naming</h2>
-
-  <div>
-    <label>Prism ID: <input type="text" id="prismId" oninput="generateFileNames();"></label><br>
-    <label>Project Name: <input type="text" id="projectName" oninput="generateFileNames();"></label><br>
-    <label>Fiber Name: <input type="text" id="fiberNameMain" oninput="generateFileNames();"></label><br>
-    <label>Fiber Name (Report 1): <input type="text" id="fiberName1" oninput="generateFileNames();"></label><br>
-    <label>Buffer Name (Report 1): <input type="text" id="buffer1" oninput="generateFileNames();"></label><br>
-    <label>Fiber Name (Report 2): <input type="text" id="fiberName2" oninput="generateFileNames();"></label><br>
-    <label>Buffer Name (Report 2): <input type="text" id="buffer2" oninput="generateFileNames();"></label><br>
-    <label>Fiber for Overview: <input type="text" id="fiberOverview" oninput="generateFileNames();"></label><br>
-    <label>Buffer for Overview: <input type="text" id="bufferOverview" oninput="generateFileNames();"></label><br>
-    <label>Enclosure Name: <input type="text" id="enclosureName" oninput="generateFileNames();"></label>
-  </div>
-
-  <div class="tab-buttons">
-    <button class="tab-btn active" data-tab="coax">Coax</button>
-    <button class="tab-btn" data-tab="fiber">Fiber</button>
-    <button class="tab-btn" data-tab="zip">Zip</button>
-  </div>
-
-  <div id="coax" class="tab-content active">
-    <h3>Coax File Names</h3>
-    <div id="coaxList"></div>
-  </div>
-
-  <div id="fiber" class="tab-content">
-    <h3>Fiber File Names</h3>
-    <div id="fiberList"></div>
-  </div>
-
-  <div id="zip" class="tab-content">
-    <h3>Zip File Names</h3>
-    <div id="zipList"></div>
-  </div>
-
-  <div id="copyNotification">Copied!</div>
-
-  <script>
-    const buttons = document.querySelectorAll('.tab-btn');
-    const contents = document.querySelectorAll('.tab-content');
-    const copyNotification = document.getElementById('copyNotification');
-
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        buttons.forEach(b => b.classList.remove('active'));
-        contents.forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
-        generateFileNames();
-      });
-    });
-
-    function generateFileNames() {
-      const prismId = document.getElementById('prismId').value.trim().toUpperCase();
-      const projectName = document.getElementById('projectName').value.trim().toUpperCase();
-      const fiberNameMain = document.getElementById('fiberNameMain').value.trim().toUpperCase();
-      const fiberName1 = document.getElementById('fiberName1').value.trim().toUpperCase();
-      const buffer1 = document.getElementById('buffer1').value.trim().toUpperCase();
-      const fiberName2 = document.getElementById('fiberName2').value.trim().toUpperCase();
-      const buffer2 = document.getElementById('buffer2').value.trim().toUpperCase();
-      const fiberOverview = document.getElementById('fiberOverview').value.trim().toUpperCase();
-      const bufferOverview = document.getElementById('bufferOverview').value.trim().toUpperCase();
-      const enclosureName = document.getElementById('enclosureName').value.trim().toUpperCase();
-
-      // COAX
-      const coaxFiles = [];
-      if (prismId && projectName) {
-        coaxFiles.push(`Before Print: ${prismId}_${projectName}_BEFORE_COAX`);
-        coaxFiles.push(`After Print: ${prismId}_${projectName}_AFTER_COAX`);
-        coaxFiles.push(`BOM: ${prismId}_${projectName}_BOM_COAX`);
-        coaxFiles.push(`HAF: ${prismId}_${projectName}_HAF_COAX`);
-      }
-      displayFiles('coaxList', coaxFiles);
-
-      // FIBER
-      const fiberFiles = [];
-      if (prismId && projectName) {
-        fiberFiles.push(`Before Print: ${prismId}_${projectName}_BEFORE_FIBER`);
-        fiberFiles.push(`After Print: ${prismId}_${projectName}_AFTER_FIBER`);
-        fiberFiles.push(`BOM: ${prismId}_${projectName}_BOM_FIBER`);
-        fiberFiles.push(`HAF: ${prismId}_${projectName}_HAF_FIBER`);
-        fiberFiles.push(`Splice Report: ${prismId}_${projectName}_SPLICE REPORTS_FIBER`);
-      }
-      if (fiberName1 && buffer1) fiberFiles.push(`Trace Report 1: ${fiberNameMain}_${fiberName1}_${buffer1}_TRACE REPORT_FIBER`);
-      if (fiberName2 && buffer2) fiberFiles.push(`Trace Report 2: ${fiberNameMain}_${fiberName2}_${buffer2}_TRACE REPORT_FIBER`);
-      if (fiberName1 && buffer1) fiberFiles.push(`Affected Traffic Report 1: ${fiberNameMain}_${fiberName1}_${buffer1}_AFFECTED_TRAFFIC_FIBER`);
-      if (fiberName2 && buffer2) fiberFiles.push(`Affected Traffic Report 2: ${fiberNameMain}_${fiberName2}_${buffer2}_AFFECTED_TRAFFIC_FIBER`);
-      if (enclosureName) fiberFiles.push(`Schematic Report: ${enclosureName}_SCHEMATIC_FIBER`);
-      if (fiberOverview && bufferOverview) fiberFiles.push(`Overview Print: ${fiberNameMain}_${fiberOverview}_${bufferOverview}_OVERVIEW_FIBER`);
-      displayFiles('fiberList', fiberFiles);
-
-      // ZIP
-      const zipFiles = [];
-      if (prismId) {
-        zipFiles.push(`Coax: ${prismId}_FINAL_DESIGN_COAX`);
-        zipFiles.push(`Fiber: ${prismId}_FINAL_DESIGN_FIBER`);
-      }
-      displayFiles('zipList', zipFiles);
-    }
-
-    function displayFiles(containerId, files) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      files.forEach(file => {
-        const div = document.createElement('div');
-        div.className = 'file-item';
-        div.innerHTML = `<span>${file}</span> <button class="copy-btn" onclick="copyToClipboard('${file}')">Copy</button>`;
-        container.appendChild(div);
-      });
-    }
-
-    function copyToClipboard(text) {
-      const actualText = text.split(':')[1]?.trim().toUpperCase();
-      if (!actualText) return;
-      navigator.clipboard.writeText(actualText).then(() => {
-        showCopyNotification(actualText);
-      }).catch(() => {
-        // Fallback
-        const textarea = document.createElement('textarea');
-        textarea.value = actualText;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        showCopyNotification(actualText);
-      });
-    }
-
-    function showCopyNotification(filename) {
-      copyNotification.innerText = `Copied: ${filename}`;
-      copyNotification.style.display = 'block';
-      copyNotification.style.animation = 'none';
-      void copyNotification.offsetWidth; // restart animation
-      copyNotification.style.animation = 'fadeInOut 1.2s ease forwards';
-      setTimeout(() => {
-        copyNotification.style.display = 'none';
-      }, 1200);
-    }
-
-    // Initialize
-    generateFileNames();
-  </script>
+    <header>
+        <div class="container header-content">
+            <div>
+                <h1>Deliverable File Naming Tool</h1>
+                <p class="subtitle">Generate standardized file names for your network documentation</p>
+            </div>
+        </div>
+    </header>
+    <!-- Add your content here -->
+    <footer>
+        &copy; 2025 Deliverable File Naming Tool
+    </footer>
 </body>
 </html>
