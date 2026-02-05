@@ -1,215 +1,214 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Coax/Fiber/Zip Tabs</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        input {
-            padding: 5px;
-            margin: 5px 0;
-            width: 300px;
-        }
-        .tab-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .tab-buttons button {
-            padding: 10px 20px;
-            border: none;
-            background: #ccc;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .tab-buttons button.active {
-            background: #007BFF;
-            color: white;
-        }
-        .tab-content {
-            display: none;
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background: #f9f9f9;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .file-item {
-            margin: 5px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .copy-btn {
-            padding: 5px 10px;
-            cursor: pointer;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-        }
-        #copyNotification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            display: none;
-            font-size: 14px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            animation: fadeInOut 1.2s ease forwards;
-            max-width: 350px;
-            word-break: break-word;
-        }
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateY(20px); }
-            20% { opacity: 1; transform: translateY(0); }
-            80% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(20px); }
-        }
-    </style>
+<meta charset="UTF-8" />
+<title>OSP Project Checklist</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f6f8;
+  }
+  h2 { margin-top: 0; }
+  h3 {
+    margin-bottom: 6px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 4px;
+  }
+  .container {
+    display: flex;
+    height: 100vh;
+  }
+  .main {
+    flex: 3;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  .notes {
+    flex: 1;
+    border-left: 1px solid #ccc;
+    padding: 20px;
+    background: #fff;
+  }
+  .section {
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+  }
+  label {
+    display: block;
+    margin: 6px 0;
+  }
+  textarea {
+    width: 100%;
+    height: 85%;
+    resize: none;
+  }
+  button {
+    padding: 10px 15px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+</style>
 </head>
+
 <body>
-    <h2>Deliverable File Naming</h2>
-    <div>
-        <label>Prism ID: <input type="text" id="prismId" oninput="generateFileNames();"></label><br>
-        <label>Project Name: <input type="text" id="projectName" oninput="generateFileNames();"></label><br>
-        <label>Pigtail Name: <input type="text" id="fiberNameMain" oninput="generateFileNames();"></label><br>
-        <!-- NEW FIELDS -->
-        <label>Buffer Name (Report 1): <input type="text" id="fiberName1" oninput="generateFileNames();"></label><br>
-        <label>Fiber Name (Report 1): <input type="text" id="buffer1" oninput="generateFileNames();"></label><br>
-        <label>Buffer Name (Report 2): <input type="text" id="fiberName2" oninput="generateFileNames();"></label><br>
-        <label>Fiber Name (Report 2): <input type="text" id="buffer2" oninput="generateFileNames();"></label><br>
-        <!-- Enclosure + Node -->
-        <label>Enclosure Name: <input type="text" id="enclosureName" oninput="generateFileNames();"></label><br>
-        <label>Node Name: <input type="text" id="nodeName" oninput="generateFileNames();"></label><br>
-    </div>
+<div class="container">
 
-    <div class="tab-buttons">
-        <button class="tab-btn active" data-tab="coax">Coax</button>
-        <button class="tab-btn" data-tab="fiber">Fiber</button>
-        <button class="tab-btn" data-tab="zip">Zip</button>
-    </div>
+  <!-- MAIN -->
+  <div class="main">
+    <h2 id="phaseTitle">Work Checklist</h2>
+    <div id="checklist"></div>
 
-    <div id="coax" class="tab-content active">
-        <h3>Coax File Names</h3>
-        <div id="coaxList"></div>
-    </div>
+    <button id="nextBtn" disabled>Done – Go to Self QC</button>
+    <button onclick="resetAll()">Reset to Default</button>
+  </div>
 
-    <div id="fiber" class="tab-content">
-        <h3>Fiber File Names</h3>
-        <div id="fiberList"></div>
-    </div>
+  <!-- NOTES -->
+  <div class="notes">
+    <h3>Notes / Reminders</h3>
+    <textarea id="notes" placeholder="Tap models, jumps, special instructions..."></textarea>
+  </div>
 
-    <div id="zip" class="tab-content">
-        <h3>Zip File Names</h3>
-        <div id="zipList"></div>
-    </div>
+</div>
 
-    <div id="copyNotification">Copied!</div>
+<script>
+const checklistData = [
+  {
+    title: "Strand & Address",
+    items: [
+      "Update strand position",
+      "Change address",
+      "Rearrange strand position",
+      "Resolve strand position access issue"
+    ]
+  },
+  {
+    title: "Coax, Node & Equipment",
+    items: [
+      "Update coax equipment",
+      "Rearrange coax position (add jumps)",
+      "Tap drop change",
+      "AMP upgrade",
+      "PS upgrade"
+    ]
+  },
+  {
+    title: "Boundary & Association",
+    items: [
+      "Update node and cable boundary",
+      "Reshape boundary",
+      "Associate node boundary to parent boundary",
+      "Associate parent boundary to hub boundary",
+      "Boundary association"
+    ]
+  },
+  {
+    title: "Power & Analysis",
+    items: [
+      "Update power owner",
+      "Tag updation",
+      "Analysis completed",
+      "Power buildstate updation"
+    ]
+  },
+  {
+    title: "Catalog",
+    items: [
+      "Catalog reassignment"
+    ]
+  },
+  {
+    title: "Before Print",
+    items: [
+      "Change layer to coax for parcel",
+      "BOM HAF fibre",
+      "Splicing – internal connect till next splice or hub"
+    ]
+  },
+  {
+    title: "After Print",
+    items: [
+      "Update callout",
+      "Circuit manager update",
+      "BOM HAF",
+      "Trace splice",
+      "Splice overview",
+      "Affected traffic",
+      "Schematic"
+    ]
+  },
+  {
+    title: "Callouts",
+    items: [
+      "Area (A–F)",
+      "Node",
+      "Power",
+      "Page",
+      "Title block",
+      "Terminator",
+      "Splice"
+    ]
+  }
+];
 
-    <script>
-        const buttons = document.querySelectorAll('.tab-btn');
-        const contents = document.querySelectorAll('.tab-content');
-        const copyNotification = document.getElementById('copyNotification');
+let phase = "work";
+const checklistDiv = document.getElementById("checklist");
+const nextBtn = document.getElementById("nextBtn");
 
-        buttons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                buttons.forEach(b => b.classList.remove('active'));
-                contents.forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(btn.dataset.tab).classList.add('active');
-                generateFileNames();
-            });
-        });
+function renderChecklist() {
+  checklistDiv.innerHTML = "";
+  checklistData.forEach(section => {
+    const secDiv = document.createElement("div");
+    secDiv.className = "section";
 
-        function generateFileNames() {
-            const prismId = document.getElementById('prismId').value.trim().toUpperCase();
-            const projectName = document.getElementById('projectName').value.trim().toUpperCase();
-            const fiberNameMain = document.getElementById('fiberNameMain').value.trim().toUpperCase();
-            const fiberName1 = document.getElementById('fiberName1').value.trim().toUpperCase();
-            const buffer1 = document.getElementById('buffer1').value.trim().toUpperCase();
-            const fiberName2 = document.getElementById('fiberName2').value.trim().toUpperCase();
-            const buffer2 = document.getElementById('buffer2').value.trim().toUpperCase();
-            const enclosureName = document.getElementById('enclosureName').value.trim().toUpperCase();
-            const nodeName = document.getElementById('nodeName').value.trim().toUpperCase();
+    const title = document.createElement("h3");
+    title.innerText = section.title;
+    secDiv.appendChild(title);
 
-            // COAX
-            const coaxFiles = [];
-            if(prismId && projectName){
-                coaxFiles.push(`Before Print: ${prismId}_${projectName}_BEFORE_COAX`);
-                coaxFiles.push(`After Print: ${prismId}_${projectName}_AFTER_COAX`);
-                coaxFiles.push(`BOM: ${prismId}_${projectName}_BOM_COAX`);
-                coaxFiles.push(`HAF: ${prismId}_${projectName}_HAF_COAX`);
-            }
-            displayFiles('coaxList', coaxFiles);
+    section.items.forEach(item => {
+      const label = document.createElement("label");
+      label.innerHTML = `<input type="checkbox" onchange="checkAll()"> ${item}`;
+      secDiv.appendChild(label);
+    });
 
-            // FIBER
-            const fiberFiles = [];
-            if(prismId && projectName){
-                fiberFiles.push(`Before Print: ${prismId}_${projectName}_BEFORE_FIBER`);
-                fiberFiles.push(`After Print: ${prismId}_${projectName}_AFTER_FIBER`);
-                fiberFiles.push(`BOM: ${prismId}_${projectName}_BOM_FIBER`);
-                fiberFiles.push(`HAF: ${prismId}_${projectName}_HAF_FIBER`);
-                fiberFiles.push(`Splice Report: ${prismId}_${projectName}_SPLICE REPORTS_FIBER`);
-            }
-            if(fiberName1 && buffer1) fiberFiles.push(`Trace Report 1: ${fiberNameMain}_${fiberName1}_${buffer1}_TRACE REPORT_FIBER`);
-            if(fiberName2 && buffer2) fiberFiles.push(`Trace Report 2: ${fiberNameMain}_${fiberName2}_${buffer2}_TRACE REPORT_FIBER`);
-            if(fiberName1 && buffer1) fiberFiles.push(`Affected Traffic Report 1: ${fiberNameMain}_${fiberName1}_${buffer1}_AFFECTED_TRAFFIC_FIBER`);
-            if(fiberName2 && buffer2) fiberFiles.push(`Affected Traffic Report 2: ${fiberNameMain}_${fiberName2}_${buffer2}_AFFECTED_TRAFFIC_FIBER`);
-            if(enclosureName) fiberFiles.push(`Schematic Report 1: ${enclosureName}_SCHEMATIC_FIBER`);
-            if(nodeName) fiberFiles.push(`Schematic Report 2: ${nodeName}_SCHEMATIC_FIBER`);
-            if(fiberName1 && buffer1) fiberFiles.push(`Overview Print: ${fiberNameMain}_${fiberName1}_${buffer1}_OVERVIEW_FIBER`);
-            displayFiles('fiberList', fiberFiles);
+    checklistDiv.appendChild(secDiv);
+  });
+}
 
-            // ZIP
-            const zipFiles = [];
-            if(prismId){
-                zipFiles.push(`Coax: ${prismId}_FINAL_DESIGN_COAX`);
-                zipFiles.push(`Fiber: ${prismId}_FINAL_DESIGN_FIBER`);
-            }
-            displayFiles('zipList', zipFiles);
-        }
+function checkAll() {
+  const boxes = checklistDiv.querySelectorAll("input[type=checkbox]");
+  nextBtn.disabled = ![...boxes].every(b => b.checked);
+}
 
-        function displayFiles(containerId, files) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            files.forEach(file => {
-                const div = document.createElement('div');
-                div.className = 'file-item';
-                div.innerHTML = `<span>${file}</span> <button class="copy-btn" onclick="copyToClipboard('${file}')">Copy</button>`;
-                container.appendChild(div);
-            });
-        }
+nextBtn.onclick = () => {
+  if (phase === "work") {
+    phase = "qc";
+    document.getElementById("phaseTitle").innerText = "Self QC Checklist";
+    nextBtn.innerText = "Completed";
+    nextBtn.disabled = true;
+    renderChecklist();
+  } else {
+    alert("Project Completed Successfully");
+    resetAll();
+  }
+};
 
-        function copyToClipboard(text) {
-            const actualText = text.split(':')[1]?.trim().toUpperCase();
-            if(!actualText) return;
-            navigator.clipboard.writeText(actualText).then(() => {
-                showCopyNotification(actualText);
-            });
-        }
+function resetAll() {
+  phase = "work";
+  document.getElementById("phaseTitle").innerText = "Work Checklist";
+  nextBtn.innerText = "Done – Go to Self QC";
+  nextBtn.disabled = true;
+  document.getElementById("notes").value = "";
+  renderChecklist();
+}
 
-        function showCopyNotification(filename) {
-            copyNotification.innerText = `Copied: ${filename}`;
-            copyNotification.style.display = 'block';
-            copyNotification.style.animation = 'none';
-            void copyNotification.offsetWidth; // reset animation
-            copyNotification.style.animation = 'fadeInOut 1.2s ease forwards';
-            setTimeout(() => {
-                copyNotification.style.display = 'none';
-            }, 1200);
-        }
-
-        generateFileNames();
-    </script>
+renderChecklist();
+</script>
 </body>
 </html>
