@@ -1,0 +1,24 @@
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.landing {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-btn {
+  width: 260px;
+  height: 140px;
+  font-size: 2rem;
+  font-weight: 600;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.notes-area {
+  background: #fff;
+  border-left: 1px solid #dee2e6;
+}
