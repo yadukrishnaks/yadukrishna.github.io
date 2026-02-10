@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RDOF Self QC Checklist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container-fluid vh-100">
+    <div class="row h-100">
+
+      <!-- MAIN -->
+      <div class="col-md-9 p-4 overflow-auto">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="fw-bold mb-0">Self QC – RDOF Steps</h2>
+          <span class="badge bg-dark fs-6">⏱ <span id="timer">00:00:00</span></span>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="mb-4">
+          <div class="d-flex justify-content-between mb-1">
+            <small>Progress</small>
+            <small id="progressText">0%</small>
+          </div>
+          <div class="progress">
+            <div id="progressBar" class="progress-bar bg-success" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div id="checklist"></div>
+
+        <div class="mt-4 d-flex flex-wrap gap-2">
+          <button id="toggleAllBtn" class="btn btn-primary">Select All</button>
+          <button id="doneBtn" class="btn btn-success" disabled>Done – Complete Project</button>
+         </button>
+          <button id="resetBtn" class="btn btn-outline-danger">Reset</button>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div class="col-md-3 p-4 notes-area">
+        <h5 class="fw-bold mb-3">Notes / Reminders</h5>
+        <textarea id="notes" class="form-control h-100" placeholder="QC observations, mismatches, fixes..."></textarea>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /* ========= SAME CHECKLIST AS RDOF ========= */
+    const checklistData = [
+      { title: "PRISM", items: [
+        "Assign designer",
+        "Download Every documents"
+      ]},
+      { title: "MQMS – ROUTE", items: [
+        "Run clock in ROUTE"
+      ]},
+      { title: "MAGELLAN", items: [
+        "Create Workspace"
+      ]},
+      { title: "ROUTE PHASE – BEFORE PRINT", items: [
+        "Take Before Print"
+      ]},
+      { title: "ROUTE PHASE – DRAFTING & ANALYSIS", items: [
+        "Change footage",
+        "Tick mark"
+      ]},
+      { title: "MERGE WORKSPACE – ROUTE", items: [
+        "Merge workspace in MQMS",
+        "Verify module details are matching BOM",
+        "Submit MQMS"
+      ]},
+      { title: "FIBER PHASE", items: [
+        "Tap splicing",
+        "Change tap model",
+        "Tap, splice, cable name updation",
+        "Hub splicing",
+        "DWDM",
+        "Circuit and sub circuit",
+        "Boundary association",
+        "Build state",
+        "Through Splicing",
+        "Check Unavailable connections",
+        "Check Unlinked address"
+      ]},
+      { title: "FIBER PHASE – TAKE AFTER PRINT", items: [
+        "Take after print"
+      ]},
+      { title: "MERGE WORKSPACE – FIBER", items: [
+        "Merge workspace in MQMS",
+        "Verify module details are Matching BOM & HAF",
+        "Submit MQMS"
+      ]},
+      { title: "PACKAGE PHASE", items: [
+        "Start clock in PACKAGE",
+        "Take prints and Add title block",
+        "Trace report",
+        "Attach the file in the Attachment TAB – MQMS"
+      ]},
+      { title: "PRISM – VALIDATIONS", items: [
+        "Match Strand Footages from BOM",
+        "Match Aerial and Underground footage BOM",
+        "Check primary HUB matching Birth certificate"
+      ]},
+      { title: "PRISM – ASBUILT", items: [
+        "Check the Asbuilt Posted By Design",
+        "Match Aerial and Underground footage BOM"
+      ]}
+    ];
+
+    const checklistDiv = document.getElementById("checklist");
+    const progressBar   = document.getElementById("progressBar");
+    const progressText  = document.getElementById("progressText");
+    const timerEl       = document.getElementById("timer");
+    const toggleAllBtn  = document.getElementById("toggleAllBtn");
+    const doneBtn       = document.getElementById("doneBtn");
+    const notesEl       = document.getElementById("notes");
+    const resetBtn      = document.getElementById("resetBtn");
+
+    let startTime, timerInterval;
+
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const diff = Date.now() - startTime;
+        const h = String(Math.floor(diff/3600000)).padStart(2,"0");
+        const m = String(Math.floor(diff/60000)%60).padStart(2,"0");
+        const s = String(Math.floor(diff/1000)%60).padStart(2,"0");
+        timerEl.innerText = `${h}:${m}:${s}`;
+      }, 1000);
+    }
+
+    /* ========= STATE (QC PREFIX) ========= */
+    function saveState(checkbox) {
+      localStorage.setItem(checkbox.dataset.key, String(checkbox.checked));
+    }
+    function loadState() {
+      document.querySelectorAll("input[type=checkbox]").forEach(box => {
+        const saved = localStorage.getItem(box.dataset.key);
+        if (saved !== null) box.checked = (saved === "true");
+      });
+    }
+
+    function saveNotes() {
+      localStorage.setItem("rdofqc-notes", notesEl.value || "");
+    }
+    function loadNotes() {
+      const saved = localStorage.getItem("rdofqc-notes");
+      if (saved !== null) notesEl.value = saved;
+    }
+
+    function renderChecklist() {
+      checklistDiv.innerHTML = "";
+      checklistData.forEach((sec,i) => {
+        let html = `
+          <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-2">
+                <h5 class="mb-0">${sec.title}</h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="toggleSection(${i}, this)">Select All</button>
+              </div>
+        `;
+        sec.items.forEach((item,j) => {
+          html += `
+            <div class="form-check">
+              <input class="form-check-input sec-${i}" type="checkbox"
+                     data-key="rdofqc-${i}-${j}" onchange="saveState(this); updateProgress()">
+              <label class="form-check-label">${item}</label>
+            </div>
+          `;
+        });
+        html += `</div></div>`;
+        checklistDiv.innerHTML += html;
+      });
+      loadState();
+      loadNotes();
+      updateProgress();
+    }
+
+    function toggleSection(i, btn) {
+      const boxes = document.querySelectorAll(`.sec-${i}`);
+      const allChecked = [...boxes].every(b => b.checked);
+      boxes.forEach(b => {
+        b.checked = !allChecked;
+        localStorage.setItem(b.dataset.key, String(b.checked));
+      });
+      btn.innerText = allChecked ? "Select All" : "Unselect All";
+      updateProgress();
+    }
+    window.toggleSection = toggleSection;
+
+    function updateProgress() {
+      const boxes = document.querySelectorAll("input[type=checkbox]");
+      const total = boxes.length;
+      const done  = [...boxes].filter(b => b.checked).length;
+      const p = total ? Math.round((done/total)*100) : 0;
+      progressBar.style.width = p + "%";
+      progressText.innerText  = p + "%";
+      doneBtn.disabled = p !== 100;
+    }
+
+    toggleAllBtn.addEventListener("click", () => {
+      const boxes = document.querySelectorAll("input[type=checkbox]");
+      const allChecked = [...boxes].every(b => b.checked);
+      boxes.forEach(b => {
+        b.checked = !allChecked;
+        localStorage.setItem(b.dataset.key, String(b.checked));
+      });
+      updateProgress();
+    });
+
+    // Finish → Completed
+    doneBtn.addEventListener("click", () => {
+      location.href = "completed.html";
+    });
+
+    resetBtn.addEventListener("click", () => {
+      Object.keys(localStorage).forEach(k => {
+        if (k.startsWith("rdofqc-") || k === "rdofqc-notes") localStorage.removeItem(k);
+      });
+      renderChecklist();
+    });
+
+    notesEl.addEventListener("input", saveNotes);
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderChecklist();
+      startTimer();
+    });
+  </script>
+</body>
+</html>
