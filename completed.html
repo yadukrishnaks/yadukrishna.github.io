@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project Completed</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="d-flex justify-content-center align-items-center vh-100 bg-success-subtle">
+  <div class="text-center p-4 bg-white rounded-4 shadow">
+    <div class="display-6 mb-2">✅ Project Completed</div>
+    <p class="mb-4">Everything has been reset.</p>
+    <div class="d-flex justify-content-center gap-2">
+      <a href="index.html" class="btn btn-primary">Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    // Fallback: also clear on load (in case the previous page couldn't run JS)
+    window.addEventListener("DOMContentLoaded", () => {
+      Object.keys(localStorage).forEach(k => {
+        if (
+          k.startsWith("hs-") ||
+          k.startsWith("qc-") ||
+          k === "hs-notes" ||
+          k === "qc-notes"
+        ) {
+          localStorage.removeItem(k);
+        }
+        if (
+  k.startsWith("rdof-") ||
+  k.startsWith("rdofqc-") ||
+  k === "rdof-notes" ||
+  k === "rdofqc-notes"
+) {
+  localStorage.removeItem(k);
+}
+      });
+    });
+  </script>
+  
+</body>
+</html>
